@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\MailHelper;
+use Mail;
 use Illuminate\Http\Request;
 use App\Models\Request as Req;
 use Illuminate\Http\Response;
@@ -59,6 +61,12 @@ class RequestController extends Controller
                 $req->comment = is_null($request->post('comment')) ? $req->comment : $request->post('comment');
                 $req->status = 'Resolved';
                 $req->save();
+                $mailData = [
+                    'title' => 'Mail from Moderator@gmail.com',
+                    'question' => 'Your question: ' . $req->message,
+                    'answer' => 'Moderator answer: ' . $req->comment,
+                ];
+                Mail::to($req->email)->send(new MailHelper($mailData));
                 return response()->json([
                     "message" => "Request updated."
                 ]);
@@ -77,5 +85,4 @@ class RequestController extends Controller
             ], 404);
         }
     }
-
 }
