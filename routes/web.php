@@ -13,6 +13,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::resource('requests', \App\Http\Controllers\RequestController::class)->only(['index', 'store', 'update']);
