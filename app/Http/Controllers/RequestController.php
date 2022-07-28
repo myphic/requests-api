@@ -22,7 +22,7 @@ class RequestController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
@@ -45,13 +45,37 @@ class RequestController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, $id)
     {
-        //
+        if (Req::where('id', $id)->exists())
+        {
+            if (!is_null($request->post('comment')))
+            {
+                $req = Req::find($id);
+                $req->comment = is_null($request->post('comment')) ? $req->comment : $request->post('comment');
+                $req->status = 'Resolved';
+                $req->save();
+                return response()->json([
+                    "message" => "Request updated."
+                ]);
+            }
+            else
+            {
+                return response()->json([
+                    "message" => "The comment should not be empty."
+                ], 400);
+            }
+        }
+        else
+        {
+            return response()->json([
+                "message" => "Request not Found."
+            ], 404);
+        }
     }
 
 }
